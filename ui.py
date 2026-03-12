@@ -373,16 +373,16 @@ def render_tab_overview(milp_result: SolverResult, fifo: SolverResult,
     st.markdown(
         '<div class="section-header">🏗️ Crane utilisation timeline</div>',
         unsafe_allow_html=True)
-    st.plotly_chart(crane_timeline(milp_result, shift), width="stretch")
+    st.plotly_chart(
+        crane_timeline(milp_result, shift),
+        width="stretch", key="overview_timeline")
 
     st.markdown('<div class="section-header">📉 Loss reduction</div>',
                 unsafe_allow_html=True)
     if baselines:
         st.plotly_chart(
-            waterfall_chart(
-                milp_result,
-                baselines),
-            width="stretch")
+            waterfall_chart(milp_result, baselines),
+            width="stretch", key="overview_waterfall")
 
 
 def render_tab_schedule(milp_result: SolverResult, baselines: dict,
@@ -392,14 +392,29 @@ def render_tab_schedule(milp_result: SolverResult, baselines: dict,
 
     if baselines and show_baselines:
         strat_options = ["MILP ✦"] + list(baselines.keys())
-        sel_strat = st.radio("Show strategy:", strat_options,
-                             horizontal=True, index=0)
+        _STRAT_HELP = (
+            "**MILP ✦** — Mixed-Integer Linear Programming (CP-SAT solver); "
+            "globally optimal schedule.\n\n"
+            "**FIFO** — First In, First Out: lifts served in order of "
+            "earliest ready time.\n\n"
+            "**By Priority** — greedy dispatch sorted by brigade priority "
+            "(highest first).\n\n"
+            "**SPT** — Shortest Processing Time first: shortest lift "
+            "duration served first.\n\n"
+            "**EDD** — Earliest Due Date first: tightest deadline served "
+            "first."
+        )
+        sel_strat = st.radio(
+            "Show strategy:", strat_options,
+            horizontal=True, index=0, help=_STRAT_HELP)
         all_r = {"MILP ✦": milp_result, **baselines}
         display_result = all_r[sel_strat]
     else:
         display_result = milp_result
 
-    st.plotly_chart(gantt_chart(display_result, shift), width="stretch")
+    st.plotly_chart(
+        gantt_chart(display_result, shift),
+        width="stretch", key="schedule_gantt")
 
     st.markdown('<div class="section-header">📋 Schedule details</div>',
                 unsafe_allow_html=True)
@@ -433,7 +448,16 @@ def render_tab_performance(milp_result: SolverResult, baselines: dict,
     st.markdown(
         '<div class="section-header">📊 Strategy comparison</div>',
         unsafe_allow_html=True)
-    st.plotly_chart(comparison_chart(milp_result, baselines), width="stretch")
+    st.caption(
+        "**MILP ✦** Mixed-Integer LP (optimal) · "
+        "**FIFO** First In First Out · "
+        "**By Priority** highest priority first · "
+        "**SPT** Shortest Processing Time · "
+        "**EDD** Earliest Due Date"
+    )
+    st.plotly_chart(
+        comparison_chart(milp_result, baselines),
+        width="stretch", key="perf_comparison")
 
     c1, c2 = st.columns(2)
     with c1:
@@ -442,13 +466,14 @@ def render_tab_performance(milp_result: SolverResult, baselines: dict,
             unsafe_allow_html=True)
         st.plotly_chart(
             radar_chart(milp_result, baselines, shift, len(lifts)),
-            width="stretch")
+            width="stretch", key="perf_radar")
     with c2:
         st.markdown(
             '<div class="section-header">📦 Idle gap distribution</div>',
             unsafe_allow_html=True)
         st.plotly_chart(
-            idle_distribution(milp_result, baselines), width="stretch")
+            idle_distribution(milp_result, baselines),
+            width="stretch", key="perf_idle_dist")
 
     st.markdown('<div class="section-header">📋 Summary table</div>',
                 unsafe_allow_html=True)
@@ -489,7 +514,9 @@ def render_tab_details(milp_result: SolverResult, shift: int):
         st.markdown(
             '<div class="section-header">🏢 Brigade wait breakdown</div>',
             unsafe_allow_html=True)
-        st.plotly_chart(brigade_chart(milp_result), width="stretch")
+        st.plotly_chart(
+            brigade_chart(milp_result),
+            width="stretch", key="details_brigade")
     with c2:
         st.markdown(
             '<div class="section-header">📉 MILP loss structure</div>',
@@ -518,7 +545,7 @@ def render_tab_details(milp_result: SolverResult, shift: int):
             margin=dict(l=20, r=20, t=50, b=20),
             legend=dict(orientation="h", yanchor="bottom", y=-0.1),
         )
-        st.plotly_chart(fig_pie, width="stretch")
+        st.plotly_chart(fig_pie, width="stretch", key="details_pie")
 
     st.markdown('<div class="section-header">📊 Brigade statistics</div>',
                 unsafe_allow_html=True)
@@ -674,12 +701,16 @@ def render_tab_dashboard(milp_result: SolverResult, shift: int):
     st.markdown("<br>", unsafe_allow_html=True)
 
     # ── Utilisation bar ──────────────────────────────────────────────────────
-    st.plotly_chart(crane_timeline(milp_result, shift), width="stretch")
+    st.plotly_chart(
+        crane_timeline(milp_result, shift),
+        width="stretch", key="dash_timeline")
 
     # ── Gantt ────────────────────────────────────────────────────────────────
     st.markdown('<div class="section-header">📅 Lift Schedule</div>',
                 unsafe_allow_html=True)
-    st.plotly_chart(simple_gantt(milp_result, shift), width="stretch")
+    st.plotly_chart(
+        simple_gantt(milp_result, shift),
+        width="stretch", key="dash_gantt")
 
     # ── Simple lift list ─────────────────────────────────────────────────────
     st.markdown('<div class="section-header">📋 Lift List</div>',
