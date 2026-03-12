@@ -4,6 +4,7 @@ A Streamlit web application for optimal scheduling of tower crane lifts using
 **CP-SAT** (OR-Tools). Minimises crane idle time and brigade waiting penalties
 simultaneously.
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-equilibrium--crane.streamlit.app-FF4B4B?logo=streamlit)](https://equilibrium-crane.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.32%2B-red)
 ![OR-Tools](https://img.shields.io/badge/OR--Tools-CP--SAT-green)
