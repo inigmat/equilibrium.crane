@@ -61,7 +61,7 @@ APP_CSS = """
   .solver-err  { background:#FEE2E2; color:#991B1B; padding:.5rem 1rem;
                  border-radius:8px; font-weight:600; display:inline-block; }
 
-  section[data-testid="stSidebar"] { background: #F8FAFC; }
+
 
   .pill {
     display:inline-block; padding:2px 8px; border-radius:999px;
